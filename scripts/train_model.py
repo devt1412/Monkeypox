@@ -87,7 +87,7 @@ class_weight_dict = dict(enumerate(class_weights))
 
 # Transfer Learning
 base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(img_height, img_width, 3))
-base_model.trainable = False  # Initially freeze the base model
+base_model.trainable = False
 
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
@@ -126,11 +126,11 @@ history_1 = model.fit(
 
 # Second phase: fine-tuning the last few layers
 base_model.trainable = True
-for layer in base_model.layers[:-10]:  # Freeze all but the last 10 layers
+for layer in base_model.layers[:-10]: 
     layer.trainable = False
 
 model.compile(
-    optimizer=Adam(learning_rate=0.0001),  # Lower learning rate for fine-tuning
+    optimizer=Adam(learning_rate=0.0001), 
     loss='categorical_crossentropy',
     metrics=['accuracy']
 )
