@@ -7,31 +7,30 @@ import io
 
 app = FastAPI()
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Specify your allowed origins
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Load the model at startup
+
 model = tf.keras.models.load_model('models/final_model.h5')
 classes = ['Chickenpox', 'Healthy', 'Measles', 'Monkeypox']
 
 def preprocess_image(image_bytes):
-    # Read the image
+    
     img = Image.open(io.BytesIO(image_bytes))
     
-    # Convert to RGB if necessary
+
     if img.mode != "RGB":
         img = img.convert("RGB")
     
-    # Resize
+    
     img = img.resize((224, 224))
     
-    # Convert to array and preprocess
+    
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = img_array / 255.0
@@ -44,13 +43,13 @@ def read_root():
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    # Read the file
+    
     image_bytes = await file.read()
     
-    # Preprocess the image
+
     img_array = preprocess_image(image_bytes)
     
-    # Make prediction
+
     prediction = model.predict(img_array)
     predicted_class = classes[np.argmax(prediction[0])]
     confidence = float(np.max(prediction[0]))

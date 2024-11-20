@@ -46,7 +46,7 @@ tf.random.set_seed(seed_value)
 # Define constants
 img_height, img_width = 224, 224
 batch_size = 32
-epochs = 30  # Reduced total epochs
+epochs = 30  
 num_classes = 4
 
 # Data augmentation for training
@@ -61,10 +61,8 @@ train_datagen = ImageDataGenerator(
     fill_mode='nearest'
 )
 
-# Validation data preprocessing
 val_datagen = ImageDataGenerator(rescale=1./255)
 
-# Load and prepare the data
 train_dir = 'data/train'
 val_dir = 'data/val'
 
@@ -84,11 +82,10 @@ val_generator = val_datagen.flow_from_directory(
     shuffle=False
 )
 
-# Compute class weights
 class_weights = compute_class_weight('balanced', classes=np.unique(train_generator.classes), y=train_generator.classes)
 class_weight_dict = dict(enumerate(class_weights))
 
-# Build the model using transfer learning
+# Transfer Learning
 base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(img_height, img_width, 3))
 base_model.trainable = False  # Initially freeze the base model
 
@@ -101,14 +98,14 @@ outputs = Dense(num_classes, activation='softmax')(x)
 
 model = Model(inputs=base_model.input, outputs=outputs)
 
-# Compile the model
+# Compilation
 model.compile(
     optimizer=Adam(learning_rate=0.001),
     loss='categorical_crossentropy',
     metrics=['accuracy']
 )
 
-# Callbacks - save in .keras format first
+# Callbacks - save in .keras format
 checkpoint = ModelCheckpoint(
     'models/best_model.keras', 
     save_best_only=True, 
@@ -118,7 +115,7 @@ checkpoint = ModelCheckpoint(
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=1e-6)
 
-# First phase: train only the top layers
+# First phase: training only the top layers
 history_1 = model.fit(
     train_generator,
     epochs=epochs // 2,
@@ -127,7 +124,7 @@ history_1 = model.fit(
     class_weight=class_weight_dict
 )
 
-# Second phase: fine-tune the last few layers
+# Second phase: fine-tuning the last few layers
 base_model.trainable = True
 for layer in base_model.layers[:-10]:  # Freeze all but the last 10 layers
     layer.trainable = False
@@ -146,17 +143,17 @@ history_2 = model.fit(
     class_weight=class_weight_dict
 )
 
-# Combine histories
+# Combining histories
 history = {}
 for k in history_1.history.keys():
     history[k] = history_1.history[k] + history_2.history[k]
 
-# After training, save final model in both formats
-model.save('models/final_model.keras')  # Save in .keras format first
-# Convert to h5 format
+
+model.save('models/final_model.keras')
+# Converting to h5 format
 tf.keras.models.save_model(model, 'models/final_model.h5', save_format='h5')
 
-# Plot training history function
+# Plotting training history function
 def plot_training_history(history):
     plt.figure(figsize=(12, 5))
     plt.subplot(1, 2, 1)
@@ -179,7 +176,7 @@ def plot_training_history(history):
     plt.savefig('training_history.png')
     plt.close()
 
-# Generate and plot confusion matrix function
+# Generating and plotting confusion matrix function
 def plot_confusion_matrix(model, generator):
     y_pred = []
     y_true = []
@@ -199,7 +196,7 @@ def plot_confusion_matrix(model, generator):
     plt.savefig('confusion_matrix.png')
     plt.close()
 
-# Generate plots
+# Generating plots
 plot_training_history(history)
 plot_confusion_matrix(model, val_generator)
 

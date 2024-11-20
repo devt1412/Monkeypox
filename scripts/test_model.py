@@ -29,7 +29,7 @@ def test_single_image(img_path):
     predicted_class = classes[np.argmax(prediction)]
     print(f"Prediction for {img_path}: {predicted_class}")
 
-# Test with a batch of images (automated testing on a test set)
+
 def test_batch_images():
     test_dir = 'data/test'
 
@@ -46,7 +46,7 @@ def test_batch_images():
     test_loss, test_acc = model.evaluate(test_generator)
     print(f"Test Accuracy: {test_acc * 100:.2f}%")
 
-# Select testing mode: single image or batch testing
+
 if __name__ == "__main__":
 
     # Option 1: Test with a single image
