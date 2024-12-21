@@ -17,3 +17,17 @@ The repository is organized as follows:
   * final_model.keras
   * best_model.keras
 * scripts/: Contains the scripts for training and testing the models.
+
+## Dataset
+This project uses publicly available datasets of skin lesion images for training and testing. Ensure compliance with ethical and privacy standards when handling sensitive data.
+
+## Technologies Used
+* Python: Primary programming language.
+* FastAPI: Framework for building the API.
+* TensorFlow/PyTorch: For building and training machine learning models.
+* Uvicorn: ASGI server for serving the FastAPI application.
+* Flutter: For building cross-platform mobile applications.
+
+
+## Acknowledgements
+* Public datasets and open-source tools made this project possible.
