@@ -16,4 +16,4 @@ The repository is organized as follows:
 * models/: Stores the trained machine learning models. The training process generates two models:
   * final_model.keras
   * best_model.keras
-*scripts/: Contains the scripts for training and testing the models.
+* scripts/: Contains the scripts for training and testing the models.
